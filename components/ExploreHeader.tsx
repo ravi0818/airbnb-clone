@@ -11,7 +11,8 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import { defaultStyles } from "@/constants/Styles";
 import { ScrollView } from "react-native-gesture-handler";
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
+import * as Haptics from "expo-haptics";
 
 const categories = [
   {
@@ -44,12 +45,28 @@ const categories = [
   },
 ];
 
-const ExploreHeader = () => {
+interface Props {
+  onCategoryChange: (category: string) => void;
+}
+
+const ExploreHeader = ({ onCategoryChange }: Props) => {
+  const scrollRef = useRef<ScrollView>(null);
   const categoryRef = useRef<Array<TouchableOpacity | null>>([]);
   const [activeIndex, setActiveIndex] = useState(0);
 
   const selectCategory = (index: number) => {
+    const selected = categoryRef.current[index];
     setActiveIndex(index);
+    // selected?.measure((x, y, width, height, pageX, pageY) => {
+    //   console.log(x, y, width, height, pageX, pageY);
+    //   scrollRef.current?.scrollTo({
+    //     x: pageX - 16,
+    //     y: 0,
+    //     animated: true,
+    //   });
+    // });
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onCategoryChange(categories[index].name);
   };
   return (
     <SafeAreaView
@@ -74,52 +91,48 @@ const ExploreHeader = () => {
             <Ionicons name="options-outline" size={24} />
           </TouchableOpacity>
         </View>
-        <View
-          style={{
-            flex: 1,
+        <ScrollView
+          ref={scrollRef}
+          collapsable={false}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{
+            flexGrow: 1,
+            alignItems: "center",
+            gap: 25,
+            paddingHorizontal: 16,
           }}
         >
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{
-              flexGrow: 1,
-              alignItems: "center",
-              gap: 20,
-              paddingHorizontal: 16,
-            }}
-          >
-            {categories.map((category, index) => {
-              return (
-                <TouchableOpacity
-                  key={index}
-                  ref={(el) => (categoryRef.current[index] = el)}
+          {categories.map((category, index) => {
+            return (
+              <TouchableOpacity
+                key={index}
+                ref={(el) => (categoryRef.current[index] = el)}
+                style={
+                  activeIndex === index
+                    ? styles.categoriesBtnActive
+                    : styles.categoriesBtn
+                }
+                onPress={(event) => selectCategory(index)}
+              >
+                <MaterialIcons
+                  name={category.icon as any}
+                  size={24}
+                  color={activeIndex === index ? "#000" : Colors.grey}
+                />
+                <Text
                   style={
                     activeIndex === index
-                      ? styles.categoriesBtnActive
-                      : styles.categoriesBtn
+                      ? styles.categoryTextActive
+                      : styles.categoryText
                   }
-                  onPress={() => selectCategory(index)}
                 >
-                  <MaterialIcons
-                    name={category.icon as any}
-                    size={24}
-                    color={activeIndex === index ? "#000" : Colors.grey}
-                  />
-                  <Text
-                    style={
-                      activeIndex === index
-                        ? styles.categoryTextActive
-                        : styles.categoryText
-                    }
-                  >
-                    {category.name}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
-        </View>
+                  {category.name}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
       </View>
     </SafeAreaView>
   );
