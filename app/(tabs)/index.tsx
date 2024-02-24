@@ -1,13 +1,15 @@
-import { View, Text } from "react-native";
-import React, { useEffect, useState } from "react";
-import { Link, Stack } from "expo-router";
+import { View } from "react-native";
+import React, { useEffect, useState, useMemo } from "react";
+import { Stack } from "expo-router";
 import ExploreHeader from "@/components/ExploreHeader";
-import Listing from "@/components/Listing";
+import ListingMap from "@/components/ListingMap";
+import ListingBottomSheet from "@/components/ListingBottomSheet";
 
 const Explore = () => {
   const [category, setCategory] = useState("");
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+
   const fetchData = async () => {
     setLoading(true);
     const response = await fetch(
@@ -16,12 +18,29 @@ const Explore = () => {
     setData(response.results);
     setTimeout(() => setLoading(false), 200);
   };
+
   useEffect(() => {
     fetchData();
-  }, [category]);
-  const onCategoryChange = (category: string) => {
-    setCategory(category);
+  }, []);
+
+  const onCategoryChange = (newCategory: string) => {
+    setCategory(newCategory);
   };
+
+  // Use useMemo to memoize the ListingMap component
+  const memoizedListingMap = useMemo(
+    () => <ListingMap listing={loading ? [] : data} />,
+    [data, loading]
+  );
+
+  // Use useMemo to memoize the ListingBottomSheet component
+  const memoizedListingBottomSheet = useMemo(
+    () => (
+      <ListingBottomSheet listing={loading ? [] : data} category={category} />
+    ),
+    [data, loading, category]
+  );
+
   return (
     <View style={{ flex: 1 }}>
       <Stack.Screen
@@ -30,7 +49,8 @@ const Explore = () => {
         }}
       />
       <View>
-        <Listing listing={loading ? [] : data} category={category} />
+        {memoizedListingMap}
+        {memoizedListingBottomSheet}
       </View>
     </View>
   );
