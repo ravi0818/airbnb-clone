@@ -79,12 +79,13 @@ const ExploreHeader = ({ onCategoryChange }: Props) => {
         <View style={styles.actionRow}>
           <Link href={"/(modals)/booking"} asChild>
             <TouchableOpacity style={styles.searchBtn}>
-              <Ionicons name="search" size={24}>
-                <View>
-                  <Text style={{ fontFamily: "mon-sb" }}>Where to?</Text>
-                  <Text>Anywhere . Any week</Text>
-                </View>
-              </Ionicons>
+              <View>
+                <Ionicons name="search" size={24} />
+              </View>
+              <View>
+                <Text style={{ fontFamily: "mon-sb" }}>Where to?</Text>
+                <Text>Anywhere . Any week</Text>
+              </View>
             </TouchableOpacity>
           </Link>
           <TouchableOpacity style={styles.filterBtn}>
@@ -166,7 +167,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 10,
     padding: 14,
-    alignItems: "baseline",
+    alignItems: "center",
     width: 260,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: "#c2c2c2",
