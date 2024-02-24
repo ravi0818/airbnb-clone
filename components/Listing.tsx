@@ -6,11 +6,10 @@ import { defaultStyles } from "@/constants/Styles";
 import { Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-interface Props {
+interface IListingProps {
   listing: any[];
   category: string;
 }
-// const LeftContent = (props: any) => <Avatar.Icon {...props} icon="folder" />;
 
 const renderData: ListRenderItem<any> = ({ item }: any) => (
   <Link href={`/listing/${item.id}`} asChild>
@@ -61,13 +60,37 @@ const renderData: ListRenderItem<any> = ({ item }: any) => (
     </TouchableOpacity>
   </Link>
 );
-const Listing = ({ listing, category }: Props) => {
+const Listing = ({ listing, category }: IListingProps) => {
   useEffect(() => {
     // console.log(listing);
   }, [category]);
   return (
-    <View style={[defaultStyles.container, { marginTop: 140, height: "100%" }]}>
-      <FlatList renderItem={renderData} data={listing} />
+    <View style={[defaultStyles.container, { height: "100%" }]}>
+      <FlatList
+        renderItem={renderData}
+        data={listing}
+        scrollEnabled={false}
+        ListHeaderComponent={
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={{
+                fontFamily: "mon-sb",
+                fontSize: 16,
+                paddingBottom: 6,
+                color: "#000",
+              }}
+            >
+              {listing.length + " Items"}
+            </Text>
+          </View>
+        }
+      />
     </View>
   );
 };
